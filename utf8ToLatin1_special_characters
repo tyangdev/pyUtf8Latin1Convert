@@ -1,0 +1,109 @@
+import unicodedata
+
+# Further extended mapping of special UTF-8 characters to similar Latin-1 symbols
+utf8_to_latin1_map = {
+    '€': 'E',       # Euro sign to 'E'
+    '£': 'L',       # Pound sign to 'L'
+    '©': '(c)',     # Copyright sign to '(c)'
+    '®': '(r)',     # Registered sign to '(r)'
+    '™': 'TM',      # Trademark sign to 'TM'
+    'µ': 'u',       # Micro sign to 'u'
+    'Æ': 'AE',      # Latin capital letter AE to 'AE'
+    'æ': 'ae',      # Latin small letter AE to 'ae'
+    'Ø': 'O',       # Latin capital letter O with stroke to 'O'
+    'ø': 'o',       # Latin small letter o with stroke to 'o'
+    'ñ': 'n',       # Latin small letter n with tilde to 'n'
+    'Ñ': 'N',       # Latin capital letter N with tilde to 'N'
+    'Ç': 'C',       # Latin capital letter C with cedilla to 'C'
+    'ç': 'c',       # Latin small letter c with cedilla to 'c'
+    'Š': 'S',       # Latin capital letter S with caron to 'S'
+    'š': 's',       # Latin small letter s with caron to 's'
+    'Ž': 'Z',       # Latin capital letter Z with caron to 'Z'
+    'ž': 'z',       # Latin small letter z with caron to 'z'
+    'á': 'a',       # Latin small letter a with acute
+    'Á': 'A',       # Latin capital letter A with acute
+    'é': 'e',       # Latin small letter e with acute
+    'É': 'E',       # Latin capital letter E with acute
+    'í': 'i',       # Latin small letter i with acute
+    'Í': 'I',       # Latin capital letter I with acute
+    'ó': 'o',       # Latin small letter o with acute
+    'Ó': 'O',       # Latin capital letter O with acute
+    'ú': 'u',       # Latin small letter u with acute
+    'Ú': 'U',       # Latin capital letter U with acute
+    'ü': 'u',       # Latin small letter u with diaeresis
+    'Ü': 'U',       # Latin capital letter U with diaeresis
+    'à': 'a',       # Latin small letter a with grave
+    'À': 'A',       # Latin capital letter A with grave
+    'è': 'e',       # Latin small letter e with grave
+    'È': 'E',       # Latin capital letter E with grave
+    'ì': 'i',       # Latin small letter i with grave
+    'Ì': 'I',       # Latin capital letter I with grave
+    'ò': 'o',       # Latin small letter o with grave
+    'Ò': 'O',       # Latin capital letter O with grave
+    'ù': 'u',       # Latin small letter u with grave
+    'Ù': 'U',       # Latin capital letter U with grave
+    'å': 'a',       # Latin small letter a with ring above
+    'Å': 'A',       # Latin capital letter A with ring above
+    'ö': 'o',       # Latin small letter o with diaeresis
+    'Ö': 'O',       # Latin capital letter O with diaeresis
+    'ÿ': 'y',       # Latin small letter y with diaeresis
+    'Ÿ': 'Y',       # Latin capital letter Y with diaeresis
+    '–': '-',       # En dash to hyphen
+    '—': '-',       # Em dash to hyphen
+    '“': '"',       # Left double quotation mark to straight quotation mark
+    '”': '"',       # Right double quotation mark to straight quotation mark
+    '‘': "'",       # Left single quotation mark to straight apostrophe
+    '’': "'",       # Right single quotation mark to straight apostrophe
+    '«': '"',       # Left-pointing double angle quotation mark to straight quotation mark
+    '»': '"',       # Right-pointing double angle quotation mark to straight quotation mark
+    '…': '...',     # Ellipsis to three dots
+    '¼': '1/4',     # Vulgar fraction one-quarter to '1/4'
+    '½': '1/2',     # Vulgar fraction one-half to '1/2'
+    '¾': '3/4',     # Vulgar fraction three-quarters to '3/4'
+    '×': 'x',       # Multiplication sign to 'x'
+    '÷': '/',       # Division sign to '/'
+    '±': '+/-',     # Plus-minus sign to '+/-'
+    '√': 'sqrt',    # Square root to 'sqrt'
+    '∞': 'infinity', # Infinity to 'infinity'
+    '≈': '~',       # Approximately equal to tilde
+    '≠': '!=',      # Not equal sign to '!='
+    '≤': '<=',      # Less-than or equal to
+    '≥': '>=',      # Greater-than or equal to
+    '°': 'deg',     # Degree symbol to 'deg'
+    '¶': 'P',       # Pilcrow (paragraph mark) to 'P'
+    '§': 'SS',      # Section sign to 'SS'
+    '†': '+',       # Dagger to '+'
+    '‡': '++',      # Double dagger to '++'
+    '•': '*',       # Bullet to '*'
+    '‰': 'per mille', # Per mille sign to 'per mille'
+    '¢': 'c',       # Cent sign to 'c'
+    '¥': 'Y',       # Yen sign to 'Y'
+    '₩': 'W',       # Won sign to 'W'
+    '₹': 'Rs',      # Rupee sign to 'Rs'
+    '₽': 'R',       # Ruble sign to 'R'
+    'ƒ': 'f',       # Florin sign to 'f'
+    'º': 'o',       # Masculine ordinal indicator to 'o'
+    'ª': 'a',       # Feminine ordinal indicator to 'a'
+}
+
+def map_utf8_to_latin1(text):
+    mapped_text = []
+    for char in text:
+        if char in utf8_to_latin1_map:
+            mapped_text.append(utf8_to_latin1_map[char])
+        else:
+            # If the character is Latin-1, just append it as it is
+            if ord(char) < 256:
+                mapped_text.append(char)
+            else:
+                # Use 'NFKD' to decompose special characters to ASCII if possible
+                mapped_text.append(unicodedata.normalize('NFKD', char).encode('ascii', 'ignore').decode('ascii'))
+    return ''.join(mapped_text)
+
+# Test with an example
+utf8_text = """
+Hello – dash, ©opyright, and €uro. Quotes: “hello” ‘world’. 
+Fraction: ½, ¾. Math: √(x) ≥ y, ∞, ¼, ∑x, ≠, ±. Symbols: ¥, £, $, ¢, ®.
+"""
+latin1_text = map_utf8_to_latin1(utf8_text)
+print(latin1_text)
